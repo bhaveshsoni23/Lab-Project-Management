@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% load static  %}
+
+{% block title %} | {% endblock %}
+
+{% block content %}
+{% include 'partials/alerts.html' %}
+<style>
+	.container{
+		margin: auto;
+	}
+</style>
+<section id="bc" class="mt-3">
+    <div class="container">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item">
+            <a href="{%  url 'index' %}">
+              <i class="fas fa-home"></i> Home</a>
+          </li>
+          <li class="breadcrumb-item active"></li>
+        </ol>
+      </nav>
+    </div>
+  </section>
+<!-- Post Content Column -->
+<div class="col-lg-8 container">
+	<!-- Title -->
+	<h1 class="mt-4" style='font-size: 24px; color:#514f4f;font-weight: bold;'>{{project.title}}</h1>
+
+	<!-- Author -->
+	<div class="row-fluid">
+	    <div class="span6"><img class="rounded-circle" src="{{domain_name}}/Media/register_account/{{ project.account_id}}/profile_image/{{ project.profile_id }}" style='width: 30px; height: 30px;border-radius: 100%;border:1px solid #ccc;'></div>
+	    <div class="span6" style='margin: -28px 0px 15px 40px;text-transform: capitalize;'>{{project.fname}} {{project.lname}}</div>
+	</div>
+
+	<!-- Date/Time -->
+	<p>Posted on {{project.last_upd_local_time}}</p>
+
+	{% for item_image in project.project_image %}
+		<!-- Preview Image -->
+		<img class="img-fluid rounded" src="{{domain_name}}/Media/register_account/{{project.account_id}}/project_upload/{{project.project_id}}/media/project_image/{{item_image}}" alt="">
+	{% endfor %}
+
+	<p style='margin-top: 20px;'>{{project.description}}</p>
+
+</div>
+{% endblock %}.project_image

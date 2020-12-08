@@ -1,0 +1,205 @@
+{%  extends 'base.html' %}
+{% load static  %}
+{% block title %} Dashboard {% endblock %}
+{% block content %}
+<style type="text/css">
+
+  .lable{
+    font-size: 18px;
+    font-weight: 500;
+  }
+
+  .ProjectMainCategoryItem{
+    padding: 0px 10px;
+  }
+
+  @media only screen and (max-width: 350px) {
+  .modal {
+    padding: 0!important;
+  }
+
+  .modal-dialog{
+      margin: 0;
+  }
+}
+
+</style>
+<section id="showcase-inner" class="py-5 text-white">
+    <div class="container">
+      <div class="row text-center">
+        <div class="col-md-12">
+          <h1 class="display-4">User Dashboard</h1>
+          <p class="lead">Manage your  account</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Breadcrumb -->
+  <section id="bc" class="mt-3">
+    <div class="container">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item">
+            <a href="{% url 'index' %}">
+              <i class="fas fa-home"></i> Home</a>
+          </li>
+          <li class="breadcrumb-item active"> Dashboard</li>
+        </ol>
+      </nav>
+    </div>
+  </section>
+<!--Alerts-->
+{% include 'partials/alerts.html' %}
+  <section id="dashboard" class="py-4">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12">
+          {% if login_status_server_response %}
+          <div><img style="height:100px;width: 100px;border-radius: 100% !important; border: 2px solid #ccc;" class="rounded-circle account-img" src="{{login_status_server_response.domain_name}}/Media/register_account/{{ login_status_server_response.account_id}}/profile_image/{{ login_status_server_response.profile_id }}"></div>
+          <div style="margin: -80px auto 40px 120px;font-weight: bold;color: #5e5e5e;">Welcome <lable style="text-transform: capitalize;">{{ login_status_server_response.fname }} {{ login_status_server_response.lname }}</lable></div>
+          <div class="account-heading" style="margin: -30px auto 80px 120px;font-weight: bold;color: #5e5e5e;">Login as <lable style="text-transform: lowercase;">{{login_status_server_response.email}}</lable></div>
+          {% endif %}
+          <button style="width:150px;"class="float-right btn-primary btn-block btn-lg" data-toggle="modal" data-target="#inquiryModal">Add Project</button>
+          <!-- Inquiry Modal -->
+              <div class="modal fade" id="inquiryModal" role="dialog">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="inquiryModalLabel">Add Project</h5>
+                      <button type="button" class="close" data-dismiss="modal">
+                        <span>&times;</span>
+                      </button>
+                    </div>
+                    <div class="modal-body">
+                      <form action="{% url 'dashboard' %}" enctype = "multipart/form-data" method="POST" >
+                        {% csrf_token %}
+                        {% load bfa %}
+                        {% fingerprint_input %}
+                        <div class="form-group">
+                          <input type="text" name="form_type" class="form-control" hidden="true" value='project_submit' required>
+                          <div class='ProfileImagePreviewContainer' style="width:100%;height: 250px;border-radius:10px; border:2px solid #ccc;overflow: hidden;">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/600px-No_image_available.svg.png" class='ProfileImagePrevie' id='ProfileImagePreview' style="width:100%; height: 100%;" />
+
+                            <div style='margin-top: -135px;; text-align: center'>
+                            <label for="ProjectImage" id='ProfileImageLabel' style='color: #ffffff; background: #000000; opacity: 0.5; padding: 0px 10px; border-radius: 10px; cursor: pointer;'>SelectImage</label>
+                          </div>
+                          </div>
+                          <input type="file" name="ProjectImage" id='ProjectImage' class=" form-control" hidden="true" accept="image/x-png,image/jpeg" required>
+                        </div>
+                        <div class="form-group">
+                          <label for="Title" class="col-form-label">Title:</label>
+                          <input type="text" name="Title" class="form-control" minlength="10" required>
+                        </div>
+        
+                        <div class="form-group">
+                          <label for="Description" class="col-form-label">Description:</label>
+                          <textarea name="Description" class="form-control" minlength="50" required></textarea>
+                        </div>
+                        <div class="form-group">
+                          <select id="ProjectMainCategory" name="ProjectMainCategory" style='width: 100%; color: #6c6c6c; padding: 5px; font-weight: 500;'>
+                             <option value="">Select Category</option>
+                             <option value=",cat_iot,">IOT</option>
+                             <option value=",cat_software,">SOFTWARE</option>
+                          </select>
+                          <div id="MainCategoryOption" name="MainCategoryOption" style='margin-top: 20px;'></div>
+                          <div hidden="true"><textarea id='MainCategoryOptionTextarea' name='MainCategoryOptionTextarea' class="form-control" required></textarea></div>
+                        </div>
+                        <hr>
+                        <button type="button" id='user_submit' class="btn btn-success">submit</button>
+                        <input type="submit" value="send" id="submit_button" class="btn btn-block btn-secondary" hidden="true">
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+  <script>
+    $(document).ready(function(){
+      $('#ProjectMainCategory').change(function(){
+        $('#MainCategoryOptionTextarea').val('');
+        if(this.value == ',cat_iot,'){
+          $('#MainCategoryOption').html('<div class="lable">PLATFORM*</div><div class="ProjectMainCategoryItem"><lable><input type="checkbox" class="ProjectMainCategoryItemCheckBox" onchange="ProjectMainCategoryItemCheckBox(this)" value="platform_arduino"> Arduino</lable>&nbsp;&nbsp;<lable><input type="checkbox" class="ProjectMainCategoryItemCheckBox" onchange="ProjectMainCategoryItemCheckBox(this)" value="platform_respberrypi"> Respberry Pi</lable></div>');
+        }else if(this.value == ',cat_software,'){
+          $('#MainCategoryOption').html('<div class="lable">PLATFORM*</div><div class="ProjectMainCategoryItem"><lable><input type="checkbox" class="ProjectMainCategoryItemCheckBox" onchange="ProjectMainCategoryItemCheckBox(this)" value="platform_arduino"> Arduino</lable>&nbsp;&nbsp;<lable><input type="checkbox" class="ProjectMainCategoryItemCheckBox" onchange="ProjectMainCategoryItemCheckBox(this)" value="platform_respberrypi"> Respberry Pi</lable>&nbsp;&nbsp;<lable><input type="checkbox" class="ProjectMainCategoryItemCheckBox" onchange="ProjectMainCategoryItemCheckBox(this)" value="platform_android"> Android</lable>&nbsp;&nbsp;<lable><input type="checkbox" class="ProjectMainCategoryItemCheckBox" onchange="ProjectMainCategoryItemCheckBox(this)" value="platform_web"> Web</lable></div><div class="lable">LANGUAGE*</div><div class="ProjectMainCategoryItem"><lable><input type="checkbox" class="ProjectMainCategoryItemCheckBox" onchange="ProjectMainCategoryItemCheckBox(this)" value="language_python"> Python</lable>&nbsp;&nbsp;<lable><input type="checkbox" class="ProjectMainCategoryItemCheckBox" onchange="ProjectMainCategoryItemCheckBox(this)" value="language_php"> Php</lable>&nbsp;&nbsp;<lable><input type="checkbox" class="ProjectMainCategoryItemCheckBox" onchange="ProjectMainCategoryItemCheckBox(this)" value="language_dart "> Dart</lable></div>');
+        }else{
+          $('#MainCategoryOption').html('');
+        }
+      });
+    });
+    function ProjectMainCategoryItemCheckBox(this_ref){
+      if(this_ref.checked == true){
+        $('#MainCategoryOptionTextarea').val(($('#MainCategoryOptionTextarea').val()+','+this_ref.value+',').replace(/,+/g, ',').replace(' ', '').toLowerCase());
+      }else{
+        $('#MainCategoryOptionTextarea').val(($('#MainCategoryOptionTextarea').val().replace((','+this_ref.value+',').replace(' ', ''),',')).replace(/,+/g, ',').replace(' ', '').toLowerCase());
+      }
+    }
+
+    $('#user_submit').click(function(){
+      if($('#ProjectMainCategory').val() == ',cat_iot,'){
+        if($('#MainCategoryOptionTextarea').val().split(',').length < 3){
+          swal.fire("Please fill all required field", "", "warning"); return false;
+        }
+      }else if($('#ProjectMainCategory').val() == ',cat_software,'){
+        if($('#MainCategoryOptionTextarea').val().split(',').length < 3){
+          swal.fire("Please fill all required field", "", "warning"); return false;
+        }
+      }else{
+        swal.fire("Inalid category type", "", "warning"); return false;
+      }
+
+      $('#submit_button').click();
+    });
+
+    $("#ProjectImage").change(function(e){
+      if(this.files.length == 1){
+        var file = this.files[0];
+        var fileType = file["type"];
+        var validImageTypes = ["image/jpeg", "image/png"];
+        if ($.inArray(fileType, validImageTypes) < 0) {
+          swal.fire('',"Invalid file type", "error")
+          .then((value) => {
+            $("#ProjectImage").click();  
+          });
+          return false;
+        }else{
+          if((this.files[0].size/1024).toFixed(2) < 2048){
+            if (this.files && this.files[0]) {
+              var reader = new FileReader();
+              reader.onload = function (e) {
+                $('#ProfileImagePreview').attr('src', e.target.result);
+              }
+              reader.readAsDataURL(this.files[0]);
+            }
+          }else{
+            swal.fire("Image size must be under 2 mb", "", "warning")
+            .then((value) => {
+              $('#ProfileImagePreview').attr('src', 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/600px-No_image_available.svg.png');
+              $("#ProjectImage").click();
+            });
+          }
+        }
+      }else{
+        if(this.files.length > 1){
+          swal.fire("Select only one Profile image", "", "warning")
+          .then((value) => {
+            $('#ProfileImagePreview').attr('src', 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/600px-No_image_available.svg.png');
+            $("#ProjectImage").click();
+          });
+        }else{
+          swal.fire("Profile image must required", "", "warning")
+          .then((value) => {
+            $('#ProfileImagePreview').attr('src', 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/600px-No_image_available.svg.png');
+            $("#ProjectImage").click();
+          });
+        }
+        return false;
+      }
+    });
+  </script>
+  {% endblock %}

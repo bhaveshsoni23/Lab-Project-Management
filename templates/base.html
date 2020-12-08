@@ -1,0 +1,154 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+    <title>My project{% block title %}{% endblock %}</title>
+     <!-- Font Awesome -->
+    <link rel="stylesheet" href="{% static  'css/all.css' %}">
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
+    <!-- Custom -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <!-- lightbox -->
+    <link rel="stylesheet" href="{% static 'css/lightbox.min.css' %}">
+    <style>
+        body{
+            max-width: 100%!important;
+            overflow-x: hidden;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->
+    <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+    <script src="{% static 'js/bootstrap.bundle.min.js' %} "></script>
+    <script src="{% static 'js/lightbox.min.js' %} "></script>
+    <script src="{% static 'js/main.js' %} "></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-sha3" async=""></script>
+    <script src='https://cdn.jsdelivr.net/npm/fingerprintjs2@2/dist/fingerprint2.min.js'></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+    <!-- Top bar -->
+    {% include 'partials/_topbar.html' %}
+    <!-- Nav bar -->
+    {% include 'partials/_navbar.html' %}
+    <!-- Main content -->
+    {% block content %} {% endblock %}
+    <!-- Footer -->
+    {% include 'partials/_footer.html' %}
+    <script>
+        const domain_name = '{{domain_name}}';
+        const is_login_status_server = '{{is_login_status_server}}';
+        function AptSetJavaScriptCookie(cname, cvalue, extime) {
+        var d = new Date();
+        d.setTime(d.getTime() + (extime));
+        var expires = "expires="+ d.toUTCString();
+        document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+        }
+
+        function AptGetJavaScriptCookie(cname) {
+        var name = cname + "=";
+        var decodedCookie = decodeURIComponent(document.cookie);
+        var ca = decodedCookie.split(';');
+        for(var i = 0; i <ca.length; i++) {
+            var c = ca[i];
+            while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+            }
+            if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+            }
+        }
+        return "";
+        }
+
+        function AptDeleteJavaScriptCookie(name) {
+            document.cookie = name +'=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+        }
+        function AptextractHostname(url,port=false,protocol=false) {
+            var hostname;
+            //find & remove protocol (http, ftp, etc.) and get hostname
+
+            if(protocol != true){
+                if (url.indexOf("//") > -1) {
+                    hostname = url.split('/')[2];
+                }
+                else {
+                    hostname = url.split('/')[0];
+                }
+            }else{
+                if (url.indexOf("//") > -1) {
+                    hostname = url.split('/')[0]+'//'+url.split('/')[2];
+                }
+                else {
+                    hostname = url.split('/')[0];
+                }
+            }
+
+            //find & remove port number
+            if(port != true){
+                hostname = hostname.split(':')[0];
+            }
+            //find & remove "?"
+            hostname = hostname.split('?')[0];
+
+            return hostname;
+        }
+        (function(){
+            if(is_login_status_server == 'True'){
+                if (window.requestIdleCallback) {
+                    requestIdleCallback(function () {
+                        Fingerprint2.get(function(e){
+                            var BFP = sha3_256(e.map(function(e){return e.value}).join());
+                            var LID = AptGetJavaScriptCookie('LID');
+                            var LAID = AptGetJavaScriptCookie('LAID');
+                            var xhttp = new XMLHttpRequest();
+                            xhttp.onreadystatechange = function() {
+                                if (this.readyState == 4 && this.status == 200) {
+                                    var response = JSON.parse(this.responseText)
+                                    if(response['status'] != 'True'){
+                                        AptDeleteJavaScriptCookie('LID');
+                                        AptDeleteJavaScriptCookie('LAID');
+                                        window.location.href = "/Account/login";
+                                    }else{
+                                        console.log(response['fname']+' You are logined as '+response['email'])
+                                    }
+                                }
+                            };
+                            xhttp.open("POST", "/login_status_client/", true);
+                            xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                            xhttp.send("LID="+LID+"&LAID="+LAID+"&BFP="+BFP);
+                        })
+                    })
+                } else {
+                    setTimeout(function () {
+                        Fingerprint2.get(function(e){
+                            var BFP = sha3_256(e.map(function(e){return e.value}).join());
+                            var LID = AptGetJavaScriptCookie('LID');
+                            var LAID = AptGetJavaScriptCookie('LAID');
+                            var xhttp = new XMLHttpRequest();
+                            xhttp.onreadystatechange = function() {
+                                if (this.readyState == 4 && this.status == 200) {
+                                    var response = JSON.parse(this.responseText)
+                                    if(response['status'] != 'True'){
+                                        AptDeleteJavaScriptCookie('LID');
+                                        AptDeleteJavaScriptCookie('LAID');
+                                        window.location.href = "/Account/login";
+                                    }else{
+                                        console.log(response['fname']+' You are logined as '+response['email'])
+                                    }
+                                }
+                            };
+                            xhttp.open("POST", "/login_status_client/", true);
+                            xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                            xhttp.send("LID="+LID+"&LAID="+LAID+"&BFP="+BFP);
+                        })
+                    }, 500)
+                }
+            }
+        }());
+    </script>
+</body>
+</html>

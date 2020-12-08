@@ -1,0 +1,192 @@
+{% load static %}
+
+<script type="text/javascript">
+/// some script
+
+// jquery ready start
+$(document).ready(function() {
+  // jQuery code
+
+  //////////////////////// Prevent closing from click inside dropdown
+    $(document).on('click', '.dropdown-menu', function (e) {
+      e.stopPropagation();
+    });
+
+    // make it as accordion for smaller screens
+    if ($(window).width() < 992) {
+      $('.dropdown-menu a').click(function(e){
+        e.preventDefault();
+          if($(this).next('.submenu').length){
+            $(this).next('.submenu').toggle();
+          }
+          $('.dropdown').on('hide.bs.dropdown', function () {
+         $(this).find('.submenu').hide();
+      })
+      });
+  }
+  
+}); // jquery end
+</script>
+
+<style type="text/css">
+  @media (min-width: 992px){
+    .dropdown-menu .dropdown-toggle:after{
+      border-top: .3em solid transparent;
+        border-right: 0;
+        border-bottom: .3em solid transparent;
+        border-left: .3em solid;
+    }
+
+    .dropdown-menu .dropdown-menu{
+      margin-left:0; margin-right: 0;
+    }
+
+    .dropdown-menu li{
+      position: relative;
+    }
+    .nav-item .submenu{ 
+      display: none;
+      position: absolute;
+      left:100%; top:-7px;
+    }
+    .nav-item .submenu-left{ 
+      right:100%; left:auto;
+    }
+
+    .dropdown-menu > li:hover{ background-color: #f1f1f1 }
+    .dropdown-menu > li:hover > .submenu{
+      display: block;
+    }
+  }
+</style>
+<!-- Navbar -->
+ <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
+    <div class="container">
+      <a class="navbar-brand" href="{% url 'index'  %}">
+       Robotics
+      </a> 
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+        <ul class="navbar-nav">
+          <li 
+            {% if '/' == request.path %}
+                class="nav-item active mr-3"
+            {% else %}
+                class="nav-item  mr-3"
+            {% endif %}
+            >
+            <a class="nav-link" href="{% url 'index'  %}">Home</a>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">IOT</a>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="#">PLATFORM &raquo </a>
+                  <ul class="submenu dropdown-menu">
+                    <li><a class="dropdown-item" href="{{domain_name}}/Content?cat=cat_iot-platform_arduino">ARDUINO</a></li>
+                    <li><a class="dropdown-item" href="{{domain_name}}/Content?cat=cat_iot-platform_respberrypi">RESPBERRY PI</a></li>
+                 </ul>
+                </li>
+              </ul>
+            </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">SOFTWARE</a>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="#">PLATFORM &raquo </a>
+                  <ul class="submenu dropdown-menu">
+                    <li><a class="dropdown-item" href="{{domain_name}}/Content?cat=cat_software-platform_arduino">ARDUINO</a></li>
+                    <li><a class="dropdown-item" href="{{domain_name}}/Content?cat=cat_software-platform_web">WEB</a></li>
+                    <li><a class="dropdown-item" href="{{domain_name}}/Content?cat=cat_software-platform_android">ANDROID</a>
+                      <!-- <ul class="submenu dropdown-menu">
+                        <li><a class="dropdown-item" href="">Multi level 1</a></li>
+                        <li><a class="dropdown-item" href="">Multi level 2</a></li>
+                      </ul> -->
+                    </li>
+                    <li><a class="dropdown-item" href="">RESPBERRY PI</a></li>
+                 </ul>
+                </li>
+                <li><a class="dropdown-item" href="#">LANGUAGE &raquo </a>
+                  <ul class="submenu dropdown-menu">
+                    <li><a class="dropdown-item"  href="{{domain_name}}/Content?cat=cat_software-language_python">PYTHON</a></li>
+                    <li><a class="dropdown-item" href="{{domain_name}}/Content?cat=cat_software-language_php">PHP</a></li>
+                    <li><a class="dropdown-item" href="{{domain_name}}/Content?cat=cat_software-language_java">JAVA</a></li>
+                    <li><a class="dropdown-item" href="{{domain_name}}/Content?cat=cat_software-language_javascript">JAVASCRIPT</a></li>
+                    <li><a class="dropdown-item" href="{{domain_name}}/Content?cat=cat_software-language_nodejs">NODE JS</a></li>
+                 </ul>
+                </li>
+              </ul>
+            </li>
+       
+          <li 
+            {% if 'about' in  request.path %}
+                    class="nav-item active mr-3"
+                {% else %}
+                    class="nav-item  mr-3"
+                {% endif %}
+            >
+            <a class="nav-link" href="{% url 'about'  %}">About</a>
+          </li>
+
+           <li 
+            {% if 'ContactUs' in  request.path %}
+                    class="nav-item active mr-3"
+                {% else %}
+                    class="nav-item  mr-3"
+                {% endif %}
+            >
+            <a class="nav-link" href="{% url 'ContactUs' %}">contact Us</a>
+          </li>
+        </ul>
+        <ul class="navbar-nav ml-auto">
+          {% if is_login_status_server == 'True' %}
+            <li 
+            {% if 'dashboard' in  request.path %}
+                  class="nav-item active mr-3"
+                {% else %}
+                  class="nav-item  mr-3" 
+              {% endif %}
+            > 
+            <a class="nav-link" href="{% url 'dashboard'  %}">
+              <img style="height:30px;width: 30px" class="rounded-circle account-img" src="{{domain_name}}/Media/register_account/{{ login_status_server_response.account_id}}/profile_image/{{ login_status_server_response.profile_id }}">
+                {{ login_status_server_response.fname }} {{ login_status_server_response.lname }}</a>
+            </li>
+
+            <li class="nav-item mr-3">
+              <a href="javascript:{document.getElementById('logout').submit()}" class="nav-link">
+                <i class="fas fa-sign-out-alt">logout</i>
+                <form action="{% url 'logout' %}" method="POST"  id="logout">
+                  {% csrf_token %}
+                  <input type="hidden">
+                </form>
+              </a>
+            </li>
+          {% else %}
+            <li 
+              {% if 'register' in  request.path %}
+                        class="nav-item active mr-3"
+                    {% else %}
+                        class="nav-item  mr-3"
+                {% endif %}
+            >
+              <a class="nav-link" href="{% url 'register'  %}">
+                <i class="fas fa-user-plus"></i> Register</a>
+            </li>
+            <li
+              {% if 'register' in  request.path %}
+                class="nav-item active mr-3"
+              {% else %}
+                class="nav-item  mr-3"
+              {% endif %}
+              >
+              <a class="nav-link" href="{% url 'login'  %}">
+                <i class="fas fa-sign-in-alt"></i>
+
+                Login</a>
+            </li>
+          {% endif %}  
+
+        </ul>
+      </div>
+    </div>
+  </nav>

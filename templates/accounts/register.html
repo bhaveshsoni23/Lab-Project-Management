@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% block title %} Register Account {% endblock %}
+{% block content %}
+<section id="register" class="bg-light py-5">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6 mx-auto">
+          <div class="card">
+            <div class="card-header bg-primary text-white">
+              <h4>
+                <i class="fas fa-user-plus"></i> Register</h4>
+            </div>
+            <div class="card-body">
+                 <!--alerts--> 
+                {% include 'partials/alerts.html' %}
+                <form action="{% url 'register' %}" enctype = "multipart/form-data" method="POST">{% csrf_token %}
+                  <div class="form-group" style='margin-left: calc(50% - 75px);margin-bottom:70px'>
+                    <div class='ProfileImagePreviewContainer' style="width:150px; height:150px;border-radius: 50%; border:2px solid #ccc;overflow: hidden;">
+                      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/600px-No_image_available.svg.png" class='ProfileImagePrevie' id='ProfileImagePreview' style="width:100%; height: 100%" />
+                    </div>
+                    <div style='margin-top: -86px; margin-left: 40px;'>
+                      <label for="ProfileImage" id='ProfileImageLabel' style='color: #ffffff; background: #000000; opacity: 0.5; padding: 0px 10px; border-radius: 10px; cursor: pointer;'>Profile</label>
+                    </div>
+                    <input type="file" name="ProfileImage" id='ProfileImage' class=" form-control" required hidden="true" accept="image/x-png,image/jpeg">
+                  </div>
+                  <div class="form-group">
+                    <label for="first_name">First Name</label>
+                    <input type="text" name="first_name" class="form-control" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="last_name">Last Name</label>
+                    <input type="text" name="last_name" class="form-control" required>
+                  </div>
+                <div class="form-group">
+                  <label for="email">Email</label>
+                  <input type="email" name="email" class="form-control" required>
+                </div>
+                <div class="form-group">
+                  <label for="password2">Password</label>
+                  <input type="password" name="password" class="form-control" required>
+                </div>
+                <div class="form-group">
+                  <label for="password">Confirm Password</label>
+                  <input type="password" name="password2" class="form-control" required>
+                </div>
+                <input type="submit" value="Register" class="btn btn-secondary btn-block">
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <script>
+    $("#ProfileImage").change(function(e){
+      if(this.files.length == 1){
+        var file = this.files[0];
+        var fileType = file["type"];
+        var validImageTypes = ["image/jpeg", "image/png"];
+        if ($.inArray(fileType, validImageTypes) < 0) {
+          swal.fire('',"Invalid file type", "error")
+          .then((value) => {
+            $("#ProfileImage").click();  
+          });
+          return false;
+        }else{
+          if((this.files[0].size/1024).toFixed(2) < 2048){
+            if (this.files && this.files[0]) {
+              var reader = new FileReader();
+              reader.onload = function (e) {
+                $('#ProfileImagePreview').attr('src', e.target.result);
+              }
+              reader.readAsDataURL(this.files[0]);
+            }
+          }else{
+            swal.fire("Image size must be under 2 mb", "", "warning")
+            .then((value) => {
+              $('#ProfileImagePreview').attr('src', 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/600px-No_image_available.svg.png');
+              $("#ProfileImage").click();
+            });
+          }
+        }
+      }else{
+        if(this.files.length > 1){
+          swal.fire("Select only one Profile image", "", "warning")
+          .then((value) => {
+            $('#ProfileImagePreview').attr('src', 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/600px-No_image_available.svg.png');
+            $("#ProfileImage").click();
+          });
+        }else{
+          swal.fire("Profile image must required", "", "warning")
+          .then((value) => {
+            $('#ProfileImagePreview').attr('src', 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/600px-No_image_available.svg.png');
+            $("#ProfileImage").click();
+          });
+        }
+        return false;
+      }
+    });
+  </script>
+  {% endblock %}

@@ -1,0 +1,74 @@
+{% extends 'base.html' %} 
+{%  load static %}
+{% block title %} | welcome {% endblock %}
+{% block content %}
+<style>
+	.card-text{
+		display: inline-block;
+	    display: -webkit-box;
+	    -webkit-line-clamp: 3;
+	    -webkit-box-orient: vertical;
+	    height: 75px;
+	    overflow: hidden;
+	}
+	.image_bar{
+		height: auto;
+	}
+	@media (min-width: 580px) and (max-width: 1024px){
+		.card-deck {
+		    display: grid;
+		    grid-template-columns: 1fr 1fr;
+		}
+		.card{
+			margin-bottom: 20px!important;
+		    margin-left: 10px!important;
+		    margin-right: 10px!important;
+		}
+	}
+	@media (max-width: 580px){
+		.card-deck {
+		    flex-direction: column;
+		}
+	}
+</style>
+<section id="bc" class="mt-3">
+    <div class="container">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item">
+            <a href="{%  url 'index' %}">
+              <i class="fas fa-home"></i> Home</a>
+          </li>
+          <li class="breadcrumb-item active" style='text-transform: capitalize;'>{{breadcrumb}}</li>
+        </ol>
+      </nav>
+    </div>
+  </section>
+ <section class="py-5">
+    <div class="container">
+
+    	{% if project|length > 0 %}
+			<div class="card-deck">
+				{% for item in project %}
+				  <div class="card" id='{{item.project_image}}'>
+
+				  	{% for image_item in item.project_image %}
+				    	<img class="card-img-top image_bar" src="{{domain_name}}/Media/register_account/{{item.account_id}}/project_upload/{{item.project_id}}/media/project_image/{{image_item}}" alt="">
+				    {% endfor %}
+				    <div class="card-body">
+				      <h5 class="card-title">{{item.title}}</h5>
+				      <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This card has even longer content than the first to show that equal height action.</p>
+				      <a href="{{domain_name}}/ProjectShow?pid={{item.project_id}}" class="btn btn-primary">Know mores</a>
+				    </div>
+				    <div class="card-footer">
+				      <small class="text-muted">Last updated {{item.last_upd_sort_time}} ago</small>
+				    </div>
+				  </div>
+				{% endfor %}
+			</div>
+		{% else %}	
+		<div>No project found</div>
+		{% endif %}
+  </div>
+  </section>
+  {% endblock %}

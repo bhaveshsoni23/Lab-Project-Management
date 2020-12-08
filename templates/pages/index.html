@@ -1,0 +1,100 @@
+{% extends 'base.html' %} 
+{%  load static %}
+{% block title %} | welcome {% endblock %}
+{% load humanize  %}
+{% block content %}
+
+<!-- Showcase -->
+<!-- <section id="showcase">
+        <img src="https://www.analyticsinsight.net/wp-content/uploads/2019/06/8-Industries-that-will-Increase-Adoption-of-Robots-in-Five-Years-1024x571.png" style="height:auto;width:100%;" alt="">
+  </section> -->
+  {% include 'partials/alerts.html' %}
+  <style type="text/css">
+    .home_about{
+      margin: auto;
+      width: fit-content;
+      padding: 0px 10px;
+    }
+    @media (min-width: 580px) and (max-width: 1024px){
+      .card-deck {
+          display: grid;
+          grid-template-columns: 1fr;
+      }
+      .card{
+        margin-bottom: 20px!important;
+          margin-left: 10px!important;
+          margin-right: 10px!important;
+      }
+    }
+     @media (max-width: 768px){
+      .home_about{
+        padding: 20px 10px 10px 10px;
+      }
+    }
+    @media (max-width: 580px){
+      .card-deck {
+          flex-direction: column;
+      }
+    }
+  </style>
+
+  <section>
+    <img style="max-height:500px"  src="https://hackernoon.com/drafts/y7d43zof.png" alt="">
+  
+  </section>
+
+  <!-- Work -->
+  <section id="work" class="bg-dark text-white text-center">
+    <h2>Welcome To Robotics</h2>
+     <div class="row" style="margin-top:50px;">
+        <div class="col-md-6">
+          <img style="width: 75%; text-align: center;"  src="https://www.thegreatcourses.com/media/catalog/product/cache/1/plus_image/800x451/0f396e8a55728e79b48334e699243c07/1/3/1312.1549053061.jpg" alt="">
+        </div>
+        <div class="col-md-5" style="text-align: left;" >
+          <div class='home_about'>
+            <p><i class="fa fa-angle-right"></i>  Our mission is to help users learn Software Development more easily.</p>
+            <p><i class="fa fa-angle-right"></i>  Our mission is to help users learn Software Development more easily.</p>
+            <p> <i class="fa fa-angle-right"></i> Our mission is to help users learn Software Development more easily.</p>
+            <p> <i class="fa fa-angle-right"></i> Our mission is to help users learn Software Development more easily.</p>
+          </div>
+        </div>
+      </div>
+    <hr>
+    <a href="{% url 'about' %}" class="btn btn-secondary text-white btn-lg">Learn more</a>
+  </section>
+
+  <section class="py-5">
+    <div class="container">
+      <h2 class="text-center" style='text-transform: uppercase;'>Latest Projects</h2>
+        {% if project|length > 0 %}
+          <div class="card-deck" style="margin-top:50px;">
+              {% for item in project %}
+                <div class="card" id='{{item.project_image}}'>
+
+                  {% for image_item in item.project_image %}
+                    <img class="card-img-top image_bar" src="{{domain_name}}/Media/register_account/{{item.account_id}}/project_upload/{{item.project_id}}/media/project_image/{{image_item}}" alt="">
+                  {% endfor %}
+                  <div class="card-body">
+                    <h5 class="card-title">{{item.title}}</h5>
+                    <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This card has even longer content than the first to show that equal height action.</p>
+                    <a href="{{domain_name}}/ProjectShow?pid={{item.project_id}}" class="btn btn-primary">Know mores</a>
+                  </div>
+                  <div class="card-footer">
+                    <small class="text-muted">Last updated {{item.last_upd_sort_time}} ago</small>
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+          {% else %}  
+          <div>No project found</div>
+        {% endif %}
+        
+    
+   
+  
+  </div>
+  </section>
+
+ 
+
+{% endblock %}
